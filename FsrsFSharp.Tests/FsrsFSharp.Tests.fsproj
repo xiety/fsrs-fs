@@ -1,0 +1,24 @@
+<Project Sdk="MSTest.Sdk/3.6.4">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="MSTestSettings.fs" />
+    <Compile Include="BasicTests.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fs30Unit.MsTest" Version="7.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FsrsFSharp\FsrsFSharp.fsproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FsrsFSharp/FsrsFSharp.fsproj" />
+  <Project Path="FsrsFSharp.Tests/FsrsFSharp.Tests.fsproj" />
+</Solution>
