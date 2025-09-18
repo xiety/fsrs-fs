@@ -42,6 +42,10 @@ type Scheduler = private {
     Factor: float
 }
 
+type SchedulerApi = {
+    ReviewCard : Card -> Rating -> TimeSpan -> Card
+}
+
 module internal FsrsAlgorithm =
     let private minDifficulty = 1.0
     let private maxDifficulty = 10.0
@@ -159,17 +163,6 @@ module Scheduler =
 
         filled
 
-    let create (config: SchedulerConfig) : Scheduler =
-        let filledParams = checkAndFillParameters config.Parameters
-        let decay = -filledParams.[20]
-        let scheduler = {
-            Config = config
-            Parameters = filledParams
-            Decay = decay
-            Factor = 0.9 ** (1.0 / decay) - 1.0
-        }
-        scheduler
-
     let internal calculateNextReviewInterval (scheduler: Scheduler) (stability: float) =
         nextInterval
             scheduler.Factor
@@ -249,7 +242,7 @@ module Scheduler =
         | true, Review -> getFuzzedInterval rand scheduler.Config.MaximumInterval interval
         | _ -> interval
 
-    let reviewCard (rand: Random) (scheduler: Scheduler) (card: Card)
+    let reviewCard (scheduler: Scheduler) (rand: Random) (card: Card)
                    (rating: Rating) (reviewInterval: TimeSpan) =
         let nextReviewedState = calculateNextReviewedState scheduler card rating reviewInterval
         let (finalReviewedState, baseInterval) =
@@ -257,3 +250,19 @@ module Scheduler =
         let finalInterval = applyFuzzing rand scheduler finalReviewedState baseInterval
         let updatedCard = { card with Interval = finalInterval; Phase = Reviewed finalReviewedState }
         updatedCard
+
+    let createScheduler (config: SchedulerConfig) : Scheduler =
+        let filledParams = checkAndFillParameters config.Parameters
+        let decay = -filledParams.[20]
+        {
+            Config = config
+            Parameters = filledParams
+            Decay = decay
+            Factor = 0.9 ** (1.0 / decay) - 1.0
+        }
+
+    let create (config: SchedulerConfig) (rand: Random) : SchedulerApi =
+        let scheduler = createScheduler config
+        {
+            ReviewCard = reviewCard scheduler rand
+        }
